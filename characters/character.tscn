@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://sx426t40x37p"]
 
 [ext_resource type="Script" uid="uid://js300hrbbgdc" path="res://characters/character.gd" id="1_qqr4u"]
+[ext_resource type="Script" uid="uid://xp8dcyfpo2gf" path="res://hbox/hurtbox.gd" id="2_qqr4u"]
+[ext_resource type="Script" uid="uid://cof3vg7kuwka2" path="res://hbox/hitbox.gd" id="3_3fwhk"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_54qew"]
 custom_solver_bias = 0.469
@@ -70,11 +72,19 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3fwhk"]
+radius = 29.0
+height = 122.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mdkfl"]
+size = Vector2(68, 20)
+
 [node name="Character" type="CharacterBody2D" unique_id=936889375]
 script = ExtResource("1_qqr4u")
 
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2113570327]
 shape = SubResource("CapsuleShape2D_54qew")
+debug_color = Color(0, 1, 0, 0.41960785)
 
 [node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
 sprite_frames = SubResource("SpriteFrames_54qew")
@@ -92,6 +102,23 @@ one_shot = true
 [node name="SkillThreeTimer" type="Timer" parent="." unique_id=911897206]
 
 [node name="UltimateTimer" type="Timer" parent="." unique_id=757155592]
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1042692501]
+script = ExtResource("2_qqr4u")
+metadata/_custom_type_script = "uid://xp8dcyfpo2gf"
+
+[node name="Collision" type="CollisionShape2D" parent="Hurtbox" unique_id=1926244224]
+shape = SubResource("CapsuleShape2D_3fwhk")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=1526398671]
+script = ExtResource("3_3fwhk")
+metadata/_custom_type_script = "uid://cof3vg7kuwka2"
+
+[node name="Collision" type="CollisionShape2D" parent="Hitbox" unique_id=782901455]
+position = Vector2(64, 0)
+shape = SubResource("RectangleShape2D_mdkfl")
+disabled = true
+debug_color = Color(1, 0, 0, 0.41960785)
 
 [connection signal="timeout" from="JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
 [connection signal="timeout" from="BasicAttackTimer" to="." method="_on_basic_attack_timer_timeout"]

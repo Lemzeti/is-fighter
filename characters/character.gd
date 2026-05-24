@@ -55,6 +55,8 @@ var animations: Array[String] = [
 ]
 
 var direction: float = 0.0
+var last_direction: float = 0.0
+
 var can_jump: bool = true
 var can_attack: bool = true
 var can_skill_one: bool = true
@@ -76,6 +78,7 @@ var crouch_speed: float = 0.0
 @onready var skill_two_timer: Timer = $SkillTwoTimer
 @onready var skill_three_timer: Timer = $SkillThreeTimer
 @onready var ultimate_timer: Timer = $UltimateTimer
+@onready var hitbox: CollisionShape2D = $Hitbox/Collision
 
 
 func _ready() -> void:
@@ -85,6 +88,8 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	direction = Input.get_axis("move_left", "move_right")
+	last_direction = direction if direction != 0.0 else last_direction
+
 	can_jump = jump_cooldown_timer.is_stopped() and is_on_floor()
 	can_attack = basic_attack_timer.is_stopped()
 	can_skill_one = skill_one_timer.is_stopped()
@@ -136,7 +141,8 @@ func _physics_process(_delta: float) -> void:
 	_handle_animation()
 
 	# Debug
-	print(animations[current_state])
+	if current_state != State.IDLE:
+		print(animations[current_state])
 
 	move_and_slide()
 
@@ -180,25 +186,30 @@ func _process_moving_while_crouching() -> void:
 
 func _process_basic_attack() -> void:
 	can_attack = false
+	_enable_hitbox()
 
 
 func _process_skill_one() -> void:
-	can_skill_one = true
+	can_skill_one = false
+	_enable_hitbox()
 	skill_one_timer.start()
 
 
 func _process_skill_two() -> void:
-	can_skill_two = true
+	can_skill_two = false
+	_enable_hitbox()
 	skill_two_timer.start()
 
 
 func _process_skill_three() -> void:
 	can_skill_three = false
+	_enable_hitbox()
 	ultimate_timer.start()
 
 
 func _process_ultimate() -> void:
 	can_ult = false
+	_enable_hitbox()
 	ultimate_timer.start()
 
 
@@ -217,6 +228,9 @@ func _character_faces_move_direction() -> void:
 
 
 func _setup_stats() -> void:
+	if not hitbox.disabled:
+		hitbox.disabled = true
+
 	health = base_health
 	damage = base_damage
 	movement_speed = base_movement_speed
@@ -230,25 +244,46 @@ func _setup_stats() -> void:
 	ultimate_timer.wait_time = ultimate_cooldown
 
 
+func _enable_hitbox() -> void:
+	hitbox.disabled = false
+
+
+func _disable_hitbox() -> void:
+	hitbox.disabled = true
+
+
+func take_damage(amount: float) -> void:
+	health -= amount
+	if health <= 0.0:
+		# die
+		pass
+
+
 func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true
+	_disable_hitbox()
 
 
 func _on_basic_attack_timer_timeout() -> void:
 	can_attack = true
+	_disable_hitbox()
 
 
 func _on_skill_one_timer_timeout() -> void:
 	can_skill_one = true
+	_disable_hitbox()
 
 
 func _on_skill_two_timer_timeout() -> void:
 	can_skill_two = true
+	_disable_hitbox()
 
 
 func _on_skill_three_timer_timeout() -> void:
 	can_skill_three = true
+	_disable_hitbox()
 
 
 func _on_ultimate_timer_timeout() -> void:
 	can_ult = true
+	_disable_hitbox()

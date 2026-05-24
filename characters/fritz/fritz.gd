@@ -1,7 +1,11 @@
 extends Character
 
 
+@export_group("Parameters")
 @export var combo_time: float = 0.2
+@export_subgroup("Attack")
+@export var dash_punch_distance: float = 5000.0
+@export var dash_punch_speed: float = 1200.0
 
 
 enum AttackPhase {
@@ -55,6 +59,8 @@ func _front_kick() -> void:
 
 func _dash_punch() -> void:
 	print("dashpunchdashpunchdashpunch")
+	velocity.x += dash_punch_distance * last_direction
+	_enable_hitbox()
 
 
 func _process_skill_one() -> void:
