@@ -1,3 +1,16 @@
 [gd_scene format=3 uid="uid://b2vs3bqci83oq"]
 
+[ext_resource type="PackedScene" uid="uid://d1ksrfbf37nu8" path="res://characters/fritz/fritz.tscn" id="1_ig7tw"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ig7tw"]
+
 [node name="Main" type="Node2D" unique_id=1364142304]
+
+[node name="Fritz" parent="." unique_id=936889375 instance=ExtResource("1_ig7tw")]
+position = Vector2(433, 169)
+
+[node name="Floor" type="StaticBody2D" parent="." unique_id=2147118679]
+position = Vector2(576, 544)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor" unique_id=1569089923]
+shape = SubResource("WorldBoundaryShape2D_ig7tw")

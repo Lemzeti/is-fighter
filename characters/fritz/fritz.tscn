@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://d1ksrfbf37nu8"]
+
+[ext_resource type="PackedScene" uid="uid://sx426t40x37p" path="res://characters/character.tscn" id="1_ecjbj"]
+[ext_resource type="Script" uid="uid://bue7r5ufopdlb" path="res://characters/fritz/fritz.gd" id="2_0bv7v"]
+
+[node name="Fritz" unique_id=936889375 instance=ExtResource("1_ecjbj")]
+script = ExtResource("2_0bv7v")

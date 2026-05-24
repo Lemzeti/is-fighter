@@ -1,10 +1,72 @@
 [gd_scene format=3 uid="uid://sx426t40x37p"]
 
-[ext_resource type="Texture2D" uid="uid://ct4nek1evajak" path="res://icon.svg" id="1_54qew"]
 [ext_resource type="Script" uid="uid://js300hrbbgdc" path="res://characters/character.gd" id="1_qqr4u"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qqr4u"]
 size = Vector2(128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_54qew"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"basic_attack",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"crouch",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"move",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"move_while_crouch",
+"speed": 4.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"move_while_fall",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"skill_one",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"skill_three",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"skill_two",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"ultimate",
+"speed": 5.0
+}]
 
 [node name="Character" type="CharacterBody2D" unique_id=936889375]
 script = ExtResource("1_qqr4u")
@@ -12,5 +74,19 @@ script = ExtResource("1_qqr4u")
 [node name="Collision" type="CollisionShape2D" parent="." unique_id=2113570327]
 shape = SubResource("RectangleShape2D_qqr4u")
 
-[node name="Sprite" type="Sprite2D" parent="." unique_id=1481364113]
-texture = ExtResource("1_54qew")
+[node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
+sprite_frames = SubResource("SpriteFrames_54qew")
+animation = &"move_while_crouch"
+
+[node name="JumpCooldownTimer" type="Timer" parent="." unique_id=608412356]
+one_shot = true
+
+[node name="SkillOneTimer" type="Timer" parent="." unique_id=83936874]
+
+[node name="SkillTwoTimer" type="Timer" parent="." unique_id=907735014]
+
+[node name="SkillThreeTimer" type="Timer" parent="." unique_id=911897206]
+
+[node name="UltimateTimer" type="Timer" parent="." unique_id=757155592]
+
+[connection signal="timeout" from="JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
