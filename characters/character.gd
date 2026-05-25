@@ -8,14 +8,30 @@ const GRAVITY_CLAMP: float = 0.1
 @export var nickname: String = "" ## Character name.
 @export_group("Stats")
 @export var base_health: float = 100.0 ## Base character health.
-@export var base_damage: float = 5.0 ## Base character attack damage.
 @export var base_movement_speed: float = 800.0 ## Base character movement speed.
-@export var base_attack_speed: float = 1.0 ## Base character basic attack speed. Lower = faster.
-@export_group("Skills") # In seconds
+@export_group("Skills")
+@export_subgroup("Damage") # In seconds
+@export var basic_attack_damage: float = 1.0 ## Basic attack damage.
+@export var skill_one_damage: float = 3.0 ## Skill one damage.
+@export var skill_two_damage: float = 5.0 ## Skill two damage.
+@export var skill_three_damage: float = 7.0 ## Skill three damage.
+@export var ultimate_damage: float = 15.0 ## Ultimate skill damage.
+@export_subgroup("Cooldown") # In seconds
+@export var basic_attack_cooldown: float = 1.0 ## Basic attack cooldown (attack speed). Lower = faster.
 @export var skill_one_cooldown: float = 5.0 ## Skill one cooldown.
 @export var skill_two_cooldown: float = 10.0 ## Skill two cooldown.
 @export var skill_three_cooldown: float = 15.0 ## Skill three cooldown.
 @export var ultimate_cooldown: float = 20.0 ## Ultimate skill cooldown.
+@export_subgroup("Hitbox Position")
+@export var skill_one_hitbox_position: Vector2 = Vector2.ZERO ## Skill one hitbox position.
+@export var skill_two_hitbox_position: Vector2 = Vector2.ZERO ## Skill two hitbox position.
+@export var skill_three_hitbox_position: Vector2 = Vector2.ZERO ## Skill three hitbox position.
+@export var ultimate_hitbox_position: Vector2 = Vector2.ZERO ## Ultimate skill hitbox position.
+@export_subgroup("Hitbox Size")
+@export var skill_one_hitbox_size: Vector2 = Vector2.ZERO ## Skill one hitbox size.
+@export var skill_two_hitbox_size: Vector2 = Vector2.ZERO ## Skill two hitbox size.
+@export var skill_three_hitbox_size: Vector2 = Vector2.ZERO ## Skill three hitbox size.
+@export var ultimate_hitbox_size: Vector2 = Vector2.ZERO ## Ultimate skill hitbox size.
 @export_group("Other parameters")
 @export var base_jump_velocity: float = 1500.0 ## Base character jump height.
 @export var base_crouch_speed: float = 400.0 ## Base character crouch speed.
@@ -55,7 +71,8 @@ var animations: Array[String] = [
 ]
 
 var direction: float = 0.0
-var last_direction: float = 0.0
+var last_direction: float = 1.0
+var base_hitbox_position: float = 0.0
 
 var can_jump: bool = true
 var can_attack: bool = true
@@ -65,7 +82,6 @@ var can_skill_three: bool = true
 var can_ult: bool = true
 
 var health: float = 0.0
-var damage: float = 0.0
 var movement_speed: float = 0.0
 var jump_velocity: float = 0.0
 var crouch_speed: float = 0.0
@@ -83,7 +99,7 @@ var crouch_speed: float = 0.0
 
 func _ready() -> void:
 	anim_sprite.play("idle")
-	_setup_stats()
+	_setup()
 
 
 func _physics_process(_delta: float) -> void:
@@ -153,7 +169,7 @@ func _process_idle() -> void:
 
 
 func _process_moving() -> void:
-	_character_faces_move_direction()
+	_flip_character()
 	velocity.x = direction * movement_speed
 
 
@@ -187,30 +203,39 @@ func _process_moving_while_crouching() -> void:
 func _process_basic_attack() -> void:
 	can_attack = false
 	_enable_hitbox()
+	basic_attack_timer.start()
 
 
 func _process_skill_one() -> void:
 	can_skill_one = false
 	_enable_hitbox()
 	skill_one_timer.start()
+	# skill 1
+	_disable_hitbox() # move to subclass character
 
 
 func _process_skill_two() -> void:
 	can_skill_two = false
 	_enable_hitbox()
 	skill_two_timer.start()
+	# skill 2
+	_disable_hitbox() # move to subclass character
 
 
 func _process_skill_three() -> void:
 	can_skill_three = false
 	_enable_hitbox()
 	ultimate_timer.start()
+	# skill 3
+	_disable_hitbox() # move to subclass character
 
 
 func _process_ultimate() -> void:
 	can_ult = false
 	_enable_hitbox()
 	ultimate_timer.start()
+	# ult
+	_disable_hitbox() # move to subclass character
 
 
 func _handle_animation() -> void:
@@ -223,25 +248,46 @@ func _animation_playing(anim: String) -> bool:
 	return anim_sprite.is_playing() and anim_sprite.animation == anim
 
 
-func _character_faces_move_direction() -> void:
+func _flip_character() -> void:
+	# Sprite
 	anim_sprite.flip_h = direction < 0
 
+	# Hitbox
+	hitbox.position.x = -base_hitbox_position if last_direction < 0 else base_hitbox_position
 
-func _setup_stats() -> void:
+
+func _setup() -> void:
 	if not hitbox.disabled:
 		hitbox.disabled = true
+	base_hitbox_position = hitbox.position.x
 
 	health = base_health
-	damage = base_damage
 	movement_speed = base_movement_speed
 	jump_velocity = base_jump_velocity
 	crouch_speed = base_crouch_speed
 
-	basic_attack_timer.wait_time = base_attack_speed
+	basic_attack_timer.wait_time = basic_attack_cooldown
 	skill_one_timer.wait_time = skill_one_cooldown
 	skill_two_timer.wait_time = skill_two_cooldown
 	skill_three_timer.wait_time = skill_three_cooldown
 	ultimate_timer.wait_time = ultimate_cooldown
+
+	basic_attack_timer.one_shot = true
+	skill_one_timer.one_shot = true
+	skill_two_timer.one_shot = true
+	skill_three_timer.one_shot = true
+	ultimate_timer.one_shot = true
+
+	if not basic_attack_timer.is_connected("timeout", Callable(self, "_on_basic_attack_timer_timeout")):
+		basic_attack_timer.connect("timeout", Callable(self, "_on_basic_attack_timer_timeout"))
+	if not skill_one_timer.is_connected("timeout", Callable(self, "_on_skill_one_timer_timeout")):
+		skill_one_timer.connect("timeout", Callable(self, "_on_skill_one_timer_timeout"))
+	if not skill_two_timer.is_connected("timeout", Callable(self, "_on_skill_two_timer_timeout")):
+		skill_two_timer.connect("timeout", Callable(self, "_on_skill_two_timer_timeout"))
+	if not skill_three_timer.is_connected("timeout", Callable(self, "_on_skill_three_timer_timeout")):
+		skill_three_timer.connect("timeout", Callable(self, "_on_skill_three_timer_timeout"))
+	if not ultimate_timer.is_connected("timeout", Callable(self, "_on_ultimate_timer_timeout")):
+		ultimate_timer.connect("timeout", Callable(self, "_on_ultimate_timer_timeout"))
 
 
 func _enable_hitbox() -> void:
@@ -265,25 +311,30 @@ func _on_jump_cooldown_timer_timeout() -> void:
 
 
 func _on_basic_attack_timer_timeout() -> void:
+	print("bayes2")
 	can_attack = true
 	_disable_hitbox()
 
 
 func _on_skill_one_timer_timeout() -> void:
+	print("s1yes2")
 	can_skill_one = true
 	_disable_hitbox()
 
 
 func _on_skill_two_timer_timeout() -> void:
+	print("s2yes2")
 	can_skill_two = true
 	_disable_hitbox()
 
 
 func _on_skill_three_timer_timeout() -> void:
+	print("s3yes2")
 	can_skill_three = true
 	_disable_hitbox()
 
 
 func _on_ultimate_timer_timeout() -> void:
+	print("ultyes2")
 	can_ult = true
 	_disable_hitbox()

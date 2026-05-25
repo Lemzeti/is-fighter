@@ -88,14 +88,17 @@ animations = [{
 
 [node name="Fritz" unique_id=936889375 instance=ExtResource("1_ecjbj")]
 script = ExtResource("2_0bv7v")
-combo_time = 0.2
+combo_time = 0.7
 dash_punch_distance = 5000.0
 dash_punch_speed = 1200.0
 nickname = "Fritz"
-base_attack_speed = 0.5
 
 [node name="AnimatedSprite" parent="." index="1" unique_id=2115755648]
 sprite_frames = SubResource("SpriteFrames_0bv7v")
 animation = &"dash_punch"
 
 [node name="BasicAttackComboTimer" type="Timer" parent="." index="8" unique_id=1217703886]
+one_shot = true
+
+[node name="Collision" parent="Hitbox" parent_id_path=PackedInt32Array(1526398671) index="0" unique_id=782901455]
+position = Vector2(64, -16)

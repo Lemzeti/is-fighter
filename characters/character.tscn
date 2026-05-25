@@ -94,14 +94,19 @@ animation = &"move_while_crouch"
 one_shot = true
 
 [node name="BasicAttackTimer" type="Timer" parent="." unique_id=181656414]
+one_shot = true
 
 [node name="SkillOneTimer" type="Timer" parent="." unique_id=83936874]
+one_shot = true
 
 [node name="SkillTwoTimer" type="Timer" parent="." unique_id=907735014]
+one_shot = true
 
 [node name="SkillThreeTimer" type="Timer" parent="." unique_id=911897206]
+one_shot = true
 
 [node name="UltimateTimer" type="Timer" parent="." unique_id=757155592]
+one_shot = true
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=1042692501]
 script = ExtResource("2_qqr4u")
