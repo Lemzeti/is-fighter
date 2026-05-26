@@ -77,7 +77,7 @@ radius = 29.0
 height = 122.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mdkfl"]
-size = Vector2(68, 20)
+size = Vector2(84, 20)
 
 [node name="Character" type="CharacterBody2D" unique_id=936889375]
 script = ExtResource("1_qqr4u")
@@ -120,7 +120,7 @@ script = ExtResource("3_3fwhk")
 metadata/_custom_type_script = "uid://cof3vg7kuwka2"
 
 [node name="Collision" type="CollisionShape2D" parent="Hitbox" unique_id=782901455]
-position = Vector2(64, 0)
+position = Vector2(72, -16)
 shape = SubResource("RectangleShape2D_mdkfl")
 disabled = true
 debug_color = Color(1, 0, 0, 0.41960785)

@@ -90,8 +90,18 @@ animations = [{
 script = ExtResource("2_0bv7v")
 combo_time = 0.7
 dash_punch_distance = 5000.0
+dash_punch_duration = 1.0
 dash_punch_speed = 1200.0
+jab_hitbox_size = Vector2(88, 20)
+cross_hitbox_size = Vector2(98, 20)
+front_kick_hitbox_size = Vector2(136, 20)
+dash_punch_hitbox_size = Vector2(104, 20)
+jab_hitbox_position = Vector2(64, -16)
+cross_hitbox_position = Vector2(72, -16)
+front_kick_hitbox_position = Vector2(88, -8)
+dash_punch_hitbox_position = Vector2(72, -16)
 nickname = "Fritz"
+basic_attack_cooldown = 0.25
 
 [node name="AnimatedSprite" parent="." index="1" unique_id=2115755648]
 sprite_frames = SubResource("SpriteFrames_0bv7v")

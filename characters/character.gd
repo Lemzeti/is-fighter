@@ -2,6 +2,7 @@ class_name Character extends CharacterBody2D
 
 
 const GRAVITY_CLAMP: float = 0.1
+const ACCURATE_COLLISION_SCALING: float = 0.5
 
 
 @export_group("Display")
@@ -22,16 +23,16 @@ const GRAVITY_CLAMP: float = 0.1
 @export var skill_two_cooldown: float = 10.0 ## Skill two cooldown.
 @export var skill_three_cooldown: float = 15.0 ## Skill three cooldown.
 @export var ultimate_cooldown: float = 20.0 ## Ultimate skill cooldown.
-@export_subgroup("Hitbox Position")
-@export var skill_one_hitbox_position: Vector2 = Vector2.ZERO ## Skill one hitbox position.
-@export var skill_two_hitbox_position: Vector2 = Vector2.ZERO ## Skill two hitbox position.
-@export var skill_three_hitbox_position: Vector2 = Vector2.ZERO ## Skill three hitbox position.
-@export var ultimate_hitbox_position: Vector2 = Vector2.ZERO ## Ultimate skill hitbox position.
 @export_subgroup("Hitbox Size")
 @export var skill_one_hitbox_size: Vector2 = Vector2.ZERO ## Skill one hitbox size.
 @export var skill_two_hitbox_size: Vector2 = Vector2.ZERO ## Skill two hitbox size.
 @export var skill_three_hitbox_size: Vector2 = Vector2.ZERO ## Skill three hitbox size.
 @export var ultimate_hitbox_size: Vector2 = Vector2.ZERO ## Ultimate skill hitbox size.
+@export_subgroup("Hitbox Position")
+@export var skill_one_hitbox_position: Vector2 = Vector2.ZERO ## Skill one hitbox position.
+@export var skill_two_hitbox_position: Vector2 = Vector2.ZERO ## Skill two hitbox position.
+@export var skill_three_hitbox_position: Vector2 = Vector2.ZERO ## Skill three hitbox position.
+@export var ultimate_hitbox_position: Vector2 = Vector2.ZERO ## Ultimate skill hitbox position.
 @export_group("Other parameters")
 @export var base_jump_velocity: float = 1500.0 ## Base character jump height.
 @export var base_crouch_speed: float = 400.0 ## Base character crouch speed.
@@ -72,7 +73,9 @@ var animations: Array[String] = [
 
 var direction: float = 0.0
 var last_direction: float = 1.0
-var base_hitbox_position: float = 0.0
+
+var base_hitbox_position: Vector2 = Vector2.ZERO
+var base_hitbox_size: Vector2 = Vector2.ZERO
 
 var can_jump: bool = true
 var can_attack: bool = true
@@ -253,13 +256,13 @@ func _flip_character() -> void:
 	anim_sprite.flip_h = direction < 0
 
 	# Hitbox
-	hitbox.position.x = -base_hitbox_position if last_direction < 0 else base_hitbox_position
+	hitbox.position.x = -base_hitbox_position.x if last_direction < 0 else base_hitbox_position.x
 
 
 func _setup() -> void:
 	if not hitbox.disabled:
 		hitbox.disabled = true
-	base_hitbox_position = hitbox.position.x
+	base_hitbox_position = hitbox.position
 
 	health = base_health
 	movement_speed = base_movement_speed
@@ -307,34 +310,37 @@ func take_damage(amount: float) -> void:
 
 func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true
-	_disable_hitbox()
 
 
 func _on_basic_attack_timer_timeout() -> void:
-	print("bayes2")
+	print("bayes")
 	can_attack = true
 	_disable_hitbox()
 
 
 func _on_skill_one_timer_timeout() -> void:
-	print("s1yes2")
+	print("s1yes")
 	can_skill_one = true
 	_disable_hitbox()
 
 
 func _on_skill_two_timer_timeout() -> void:
-	print("s2yes2")
+	print("s2yes")
 	can_skill_two = true
 	_disable_hitbox()
 
 
 func _on_skill_three_timer_timeout() -> void:
-	print("s3yes2")
+	print("s3yes")
 	can_skill_three = true
 	_disable_hitbox()
 
 
 func _on_ultimate_timer_timeout() -> void:
-	print("ultyes2")
+	print("ultyes")
 	can_ult = true
 	_disable_hitbox()
+
+
+func wait(time: float) -> void:
+	await get_tree().create_timer(time).timeout
