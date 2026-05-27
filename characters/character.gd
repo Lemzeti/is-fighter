@@ -34,7 +34,7 @@ const ACCURATE_COLLISION_SCALING: float = 0.5
 @export var skill_three_hitbox_position: Vector2 = Vector2.ZERO ## Skill three hitbox position.
 @export var ultimate_hitbox_position: Vector2 = Vector2.ZERO ## Ultimate skill hitbox position.
 @export_group("Other parameters")
-@export var base_jump_velocity: float = 1500.0 ## Base character jump height.
+@export var base_jump_velocity: float = 1000.0 ## Base character jump height.
 @export var base_crouch_speed: float = 400.0 ## Base character crouch speed.
 
 
@@ -42,47 +42,69 @@ enum State {
 	IDLE,
 	MOVING,
 	JUMPED,
-	MOVING_WHILE_FALLING,
+	JUMPING,
 	FALLING,
 	CROUCHING,
+	USE_BASIC_ATTACK,
+	USE_SKILL_ONE,
+	USE_SKILL_TWO,
+	USE_SKILL_THREE,
+	USE_SKILL_ULTIMATE,
+	MOVING_WHILE_JUMPING,
+	MOVING_WHILE_FALLING,
 	MOVING_WHILE_CROUCHING,
-	BASIC_ATTACK,
-	SKILL_ONE,
-	SKILL_TWO,
-	SKILL_THREE,
-	SKILL_ULTIMATE
+	USING_BASIC_ATTACK,
+	USING_SKILL_ONE,
+	USING_SKILL_TWO,
+	USING_SKILL_THREE,
+	USING_SKILL_ULTIMATE
 }
 
 var current_state: State = State.IDLE
 
 # Must match AnimatedSprite animation names
 var animations: Array[String] = [
-	"idle",
-	"move",
-	"jump",
-	"move_while_fall",
-	"fall",
-	"crouch",
-	"move_while_crouch",
-	"basic_attack",
-	"skill_one",
-	"skill_two",
-	"skill_three",
-	"ultimate",
+	"IDLE",
+	"MOVING",
+	"JUMPED",
+	"JUMPING",
+	"FALLING",
+	"CROUCHING",
+	"USE_BASIC_ATTACK",
+	"USE_SKILL_ONE",
+	"USE_SKILL_TWO",
+	"USE_SKILL_THREE",
+	"USE_SKILL_ULTIMATE",
+	"MOVING_WHILE_JUMPING",
+	"MOVING_WHILE_FALLING",
+	"MOVING_WHILE_CROUCHING",
+	"USING_BASIC_ATTACK",
+	"USING_SKILL_ONE",
+	"USING_SKILL_TWO",
+	"USING_SKILL_THREE",
+	"USING_SKILL_ULTIMATE"
 ]
 
 var direction: float = 0.0
 var last_direction: float = 1.0
+var target_jump_height: float = 0.0
 
 var base_hitbox_position: Vector2 = Vector2.ZERO
 var base_hitbox_size: Vector2 = Vector2.ZERO
 
 var can_jump: bool = true
-var can_attack: bool = true
+var can_basic_attack: bool = true
 var can_skill_one: bool = true
 var can_skill_two: bool = true
 var can_skill_three: bool = true
-var can_ult: bool = true
+var can_skill_ultimate: bool = true
+
+var jumping: bool = false
+var using_basic_attack: bool = false
+var using_skill_one: bool = false
+var using_skill_two: bool = false
+var using_skill_three: bool = false
+var using_skill_ultimate: bool = false
 
 var health: float = 0.0
 var movement_speed: float = 0.0
@@ -91,12 +113,12 @@ var crouch_speed: float = 0.0
 
 
 @onready var anim_sprite: AnimatedSprite2D = $AnimatedSprite
-@onready var jump_cooldown_timer: Timer = $JumpCooldownTimer
-@onready var basic_attack_timer: Timer = $BasicAttackTimer
-@onready var skill_one_timer: Timer = $SkillOneTimer
-@onready var skill_two_timer: Timer = $SkillTwoTimer
-@onready var skill_three_timer: Timer = $SkillThreeTimer
-@onready var ultimate_timer: Timer = $UltimateTimer
+@onready var jump_cooldown_timer: Timer = $Timers/JumpCooldownTimer
+@onready var basic_attack_cooldown_timer: Timer = $Timers/BasicAttackCooldownTimer
+@onready var skill_one_cooldown_timer: Timer = $Timers/SkillOneCooldownTimer
+@onready var skill_two_cooldown_timer: Timer = $Timers/SkillTwoCooldownTimer
+@onready var skill_three_cooldown_timer: Timer = $Timers/SkillThreeCooldownTimer
+@onready var skill_ultimate_cooldown_timer: Timer = $Timers/SkillUltimateCooldownTimer
 @onready var hitbox: CollisionShape2D = $Hitbox/Collision
 
 
@@ -105,53 +127,67 @@ func _ready() -> void:
 	_setup()
 
 
-func _physics_process(_delta: float) -> void:
+@warning_ignore("unused_parameter")
+func _process(delta: float) -> void:
 	direction = Input.get_axis("move_left", "move_right")
 	last_direction = direction if direction != 0.0 else last_direction
 
 	can_jump = jump_cooldown_timer.is_stopped() and is_on_floor()
-	can_attack = basic_attack_timer.is_stopped()
-	can_skill_one = skill_one_timer.is_stopped()
-	can_skill_two = skill_two_timer.is_stopped()
-	can_skill_three = skill_three_timer.is_stopped()
-	can_ult = ultimate_timer.is_stopped()
+	can_basic_attack = basic_attack_cooldown_timer.is_stopped()
+	can_skill_one = skill_one_cooldown_timer.is_stopped()
+	can_skill_two = skill_two_cooldown_timer.is_stopped()
+	can_skill_three = skill_three_cooldown_timer.is_stopped()
+	can_skill_ultimate = skill_ultimate_cooldown_timer.is_stopped()
 
+
+@warning_ignore("unused_parameter")
+func _physics_process(delta: float) -> void:
 	# Process state
 	match current_state:
-		State.IDLE: _process_idle()
-		State.MOVING: _process_moving()
+		State.IDLE: pass
+		State.MOVING: _process_moving(movement_speed)
 		State.JUMPED: _process_jumped()
-		State.MOVING_WHILE_FALLING: _process_moving_while_falling()
+		State.JUMPING: _process_jumping()
 		State.FALLING: _process_falling(GRAVITY_CLAMP)
 		State.CROUCHING: _process_crouching()
+		State.USE_BASIC_ATTACK: _process_basic_attack()
+		State.USE_SKILL_ONE: _process_skill_one()
+		State.USE_SKILL_TWO: _process_skill_two()
+		State.USE_SKILL_THREE: _process_skill_three()
+		State.USE_SKILL_ULTIMATE: _process_skill_ultimate()
+		State.MOVING_WHILE_FALLING: _process_moving_while_falling()
 		State.MOVING_WHILE_CROUCHING: _process_moving_while_crouching()
-		State.BASIC_ATTACK: _process_basic_attack()
-		State.SKILL_ONE: _process_skill_one()
-		State.SKILL_TWO: _process_skill_two()
-		State.SKILL_THREE: _process_skill_three()
-		State.SKILL_ULTIMATE: _process_ultimate()
+		State.USING_BASIC_ATTACK: _process_using_basic_attack()
+		State.USING_SKILL_ONE: _process_using_skill_one()
+		State.USING_SKILL_TWO: _process_using_skill_two()
+		State.USING_SKILL_THREE: _process_using_skill_three()
+		State.USING_SKILL_ULTIMATE: _process_using_skill_ultimate()
 
 	# Transition state
-	if Input.is_action_pressed("ultimate") and can_ult:
-		current_state = State.SKILL_ULTIMATE
+	if Input.is_action_pressed("ultimate") and can_skill_ultimate:
+		current_state = State.USE_SKILL_ULTIMATE
 	elif Input.is_action_pressed("skill_three") and can_skill_three:
-		current_state = State.SKILL_THREE
+		current_state = State.USE_SKILL_THREE
 	elif Input.is_action_pressed("skill_two") and can_skill_two:
-		current_state = State.SKILL_TWO
+		current_state = State.USE_SKILL_TWO
 	elif Input.is_action_pressed("skill_one") and can_skill_one:
-		current_state = State.SKILL_ONE
-	elif Input.is_action_just_pressed("basic_attack") and can_attack:
-		current_state = State.BASIC_ATTACK
+		current_state = State.USE_SKILL_ONE
+	elif Input.is_action_just_pressed("basic_attack") and can_basic_attack:
+		current_state = State.USE_BASIC_ATTACK
 	elif Input.is_action_pressed("jump") and can_jump:
 		current_state = State.JUMPED
 	elif Input.is_action_pressed("crouch") and direction != 0.0:
 		current_state = State.MOVING_WHILE_CROUCHING
+	elif direction != 0.0 and jumping:
+		current_state = State.MOVING_WHILE_JUMPING
 	elif direction != 0.0 and not is_on_floor():
 		current_state = State.MOVING_WHILE_FALLING
 	elif Input.is_action_pressed("crouch"):
 		current_state = State.CROUCHING
 	elif direction != 0.0:
 		current_state = State.MOVING
+	elif jumping:
+		current_state = State.JUMPING
 	elif not is_on_floor():
 		current_state = State.FALLING
 	else:
@@ -161,30 +197,35 @@ func _physics_process(_delta: float) -> void:
 
 	# Debug
 	if current_state != State.IDLE:
-		print(animations[current_state])
+		print("CURRENT STATE: ", str(animations[current_state]))
 
 	move_and_slide()
 
 
-func _process_idle() -> void:
-	if velocity.x != 0.0:
-		velocity.x = 0.0
+######################################################################
+###                             STATES                             ###
+######################################################################
 
 
-func _process_moving() -> void:
+func _process_moving(speed: float) -> void:
 	_flip_character()
-	velocity.x = direction * movement_speed
+	velocity.x = direction * speed
 
 
 func _process_jumped() -> void:
 	can_jump = false
 	jump_cooldown_timer.start()
-	velocity.y -= jump_velocity
+	jumping = true
+	target_jump_height = -jump_velocity
 
 
-func _process_moving_while_falling() -> void:
-	_process_moving()
-	_process_falling(GRAVITY_CLAMP)
+func _process_jumping() -> void:
+	print("v: %.2f\t\tt: %.2f" % [velocity.y, target_jump_height])
+	print("v <= t : ", velocity.y >= target_jump_height)
+	if velocity.y >= target_jump_height:
+		velocity.y -= get_gravity().y * 0.9
+	else:
+		jumping = false
 
 
 func _process_falling(gravity_multiplier: float) -> void:
@@ -195,50 +236,91 @@ func _process_crouching() -> void:
 	if is_on_floor():
 		pass # crouch logic, maybe shorten collision
 	else:
-		_process_falling(GRAVITY_CLAMP * 2.0)
+		_process_falling(GRAVITY_CLAMP * 5.0) # Faster fall when "crouching"
+
+
+func _process_moving_while_jumping() -> void:
+	_process_moving(movement_speed)
+	_process_jumping()
+
+
+func _process_moving_while_falling() -> void:
+	_process_moving(movement_speed)
+	_process_falling(GRAVITY_CLAMP)
 
 
 func _process_moving_while_crouching() -> void:
-	velocity.x = direction * crouch_speed
+	_process_moving(movement_speed)
 	_process_crouching()
 
 
 func _process_basic_attack() -> void:
-	can_attack = false
+	can_basic_attack = false
 	_enable_hitbox()
-	basic_attack_timer.start()
+	current_state = State.USING_BASIC_ATTACK
 
 
 func _process_skill_one() -> void:
 	can_skill_one = false
 	_enable_hitbox()
-	skill_one_timer.start()
-	# skill 1
-	_disable_hitbox() # move to subclass character
+	current_state = State.USING_SKILL_ONE
 
 
 func _process_skill_two() -> void:
 	can_skill_two = false
 	_enable_hitbox()
-	skill_two_timer.start()
-	# skill 2
-	_disable_hitbox() # move to subclass character
+	current_state = State.USING_SKILL_TWO
 
 
 func _process_skill_three() -> void:
 	can_skill_three = false
 	_enable_hitbox()
-	ultimate_timer.start()
-	# skill 3
-	_disable_hitbox() # move to subclass character
+	current_state = State.USING_SKILL_THREE
 
 
-func _process_ultimate() -> void:
-	can_ult = false
+func _process_skill_ultimate() -> void:
+	can_skill_ultimate = false
 	_enable_hitbox()
-	ultimate_timer.start()
-	# ult
+	current_state = State.USING_SKILL_ULTIMATE
+
+
+func _process_using_basic_attack() -> void:
+	# basic attack...
+	# done basic attack
+	basic_attack_cooldown_timer.start()
+
+
+func _process_using_skill_one() -> void:
+	# skill 1...
+	# done skill 1
+	skill_one_cooldown_timer.start()
 	_disable_hitbox() # move to subclass character
+
+
+func _process_using_skill_two() -> void:
+	# skill 2...
+	# done skill 2
+	skill_two_cooldown_timer.start()
+	_disable_hitbox() # move to subclass character
+
+
+func _process_using_skill_three() -> void:
+	# skill 3...
+	# skill 3
+	skill_three_cooldown_timer.start()
+	_disable_hitbox() # move to subclass character
+
+
+func _process_using_skill_ultimate() -> void:
+	# ult...
+	# done ult
+	skill_ultimate_cooldown_timer.start()
+	_disable_hitbox() # move to subclass character
+
+
+######################################################################
+###                            PRIVATE                             ###
+######################################################################
 
 
 func _handle_animation() -> void:
@@ -269,28 +351,28 @@ func _setup() -> void:
 	jump_velocity = base_jump_velocity
 	crouch_speed = base_crouch_speed
 
-	basic_attack_timer.wait_time = basic_attack_cooldown
-	skill_one_timer.wait_time = skill_one_cooldown
-	skill_two_timer.wait_time = skill_two_cooldown
-	skill_three_timer.wait_time = skill_three_cooldown
-	ultimate_timer.wait_time = ultimate_cooldown
+	basic_attack_cooldown_timer.wait_time = basic_attack_cooldown
+	skill_one_cooldown_timer.wait_time = skill_one_cooldown
+	skill_two_cooldown_timer.wait_time = skill_two_cooldown
+	skill_three_cooldown_timer.wait_time = skill_three_cooldown
+	skill_ultimate_cooldown_timer.wait_time = ultimate_cooldown
 
-	basic_attack_timer.one_shot = true
-	skill_one_timer.one_shot = true
-	skill_two_timer.one_shot = true
-	skill_three_timer.one_shot = true
-	ultimate_timer.one_shot = true
+	basic_attack_cooldown_timer.one_shot = true
+	skill_one_cooldown_timer.one_shot = true
+	skill_two_cooldown_timer.one_shot = true
+	skill_three_cooldown_timer.one_shot = true
+	skill_ultimate_cooldown_timer.one_shot = true
 
-	if not basic_attack_timer.is_connected("timeout", Callable(self, "_on_basic_attack_timer_timeout")):
-		basic_attack_timer.connect("timeout", Callable(self, "_on_basic_attack_timer_timeout"))
-	if not skill_one_timer.is_connected("timeout", Callable(self, "_on_skill_one_timer_timeout")):
-		skill_one_timer.connect("timeout", Callable(self, "_on_skill_one_timer_timeout"))
-	if not skill_two_timer.is_connected("timeout", Callable(self, "_on_skill_two_timer_timeout")):
-		skill_two_timer.connect("timeout", Callable(self, "_on_skill_two_timer_timeout"))
-	if not skill_three_timer.is_connected("timeout", Callable(self, "_on_skill_three_timer_timeout")):
-		skill_three_timer.connect("timeout", Callable(self, "_on_skill_three_timer_timeout"))
-	if not ultimate_timer.is_connected("timeout", Callable(self, "_on_ultimate_timer_timeout")):
-		ultimate_timer.connect("timeout", Callable(self, "_on_ultimate_timer_timeout"))
+	if not basic_attack_cooldown_timer.is_connected("timeout", Callable(self, "_on_basic_attack_timer_timeout")):
+		basic_attack_cooldown_timer.connect("timeout", Callable(self, "_on_basic_attack_timer_timeout"))
+	if not skill_one_cooldown_timer.is_connected("timeout", Callable(self, "_on_skill_one_timer_timeout")):
+		skill_one_cooldown_timer.connect("timeout", Callable(self, "_on_skill_one_timer_timeout"))
+	if not skill_two_cooldown_timer.is_connected("timeout", Callable(self, "_on_skill_two_timer_timeout")):
+		skill_two_cooldown_timer.connect("timeout", Callable(self, "_on_skill_two_timer_timeout"))
+	if not skill_three_cooldown_timer.is_connected("timeout", Callable(self, "_on_skill_three_timer_timeout")):
+		skill_three_cooldown_timer.connect("timeout", Callable(self, "_on_skill_three_timer_timeout"))
+	if not skill_ultimate_cooldown_timer.is_connected("timeout", Callable(self, "_on_ultimate_timer_timeout")):
+		skill_ultimate_cooldown_timer.connect("timeout", Callable(self, "_on_ultimate_timer_timeout"))
 
 
 func _enable_hitbox() -> void:
@@ -301,6 +383,11 @@ func _disable_hitbox() -> void:
 	hitbox.disabled = true
 
 
+######################################################################
+###                             PUBLIC                             ###
+######################################################################
+
+
 func take_damage(amount: float) -> void:
 	health -= amount
 	if health <= 0.0:
@@ -308,39 +395,44 @@ func take_damage(amount: float) -> void:
 		pass
 
 
+func wait(time: float) -> void:
+	await get_tree().create_timer(time).timeout
+
+
+######################################################################
+###                             TIMERS                             ###
+######################################################################
+
+
 func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true
 
 
 func _on_basic_attack_timer_timeout() -> void:
-	print("bayes")
-	can_attack = true
+	#print("bayes")
+	can_basic_attack = true
 	_disable_hitbox()
 
 
 func _on_skill_one_timer_timeout() -> void:
-	print("s1yes")
+	#print("s1yes")
 	can_skill_one = true
 	_disable_hitbox()
 
 
 func _on_skill_two_timer_timeout() -> void:
-	print("s2yes")
+	#print("s2yes")
 	can_skill_two = true
 	_disable_hitbox()
 
 
 func _on_skill_three_timer_timeout() -> void:
-	print("s3yes")
+	#print("s3yes")
 	can_skill_three = true
 	_disable_hitbox()
 
 
 func _on_ultimate_timer_timeout() -> void:
-	print("ultyes")
-	can_ult = true
+	#print("ultyes")
+	can_skill_ultimate = true
 	_disable_hitbox()
-
-
-func wait(time: float) -> void:
-	await get_tree().create_timer(time).timeout

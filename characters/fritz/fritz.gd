@@ -34,7 +34,7 @@ var front_kick_damage: float = 0.0
 var dash_punch_damage: float = 0.0
 
 
-@onready var basic_attack_combo_timer: Timer = $BasicAttackComboTimer
+@onready var basic_attack_combo_timer: Timer = $Timers/BasicAttackComboTimer
 
 
 func _ready() -> void:
@@ -80,7 +80,7 @@ func _front_kick() -> void:
 func _dash_punch() -> void:
 	print("fritz_combo4_dashpunch")
 	await wait(dash_punch_duration)
-	velocity.x += dash_punch_distance * last_direction
+	velocity.x = dash_punch_distance * last_direction
 	_set_hitbox(current_phase)
 	_enable_hitbox()
 
@@ -97,7 +97,7 @@ func _process_skill_three() -> void:
 	super()
 
 
-func _process_ultimate() -> void:
+func _process_skill_ultimate() -> void:
 	super()
 
 

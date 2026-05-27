@@ -13,62 +13,92 @@ height = 128.0
 animations = [{
 "frames": [],
 "loop": true,
-"name": &"basic_attack",
+"name": &"CROUCHING",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"crouch",
+"name": &"FALLING",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"fall",
+"name": &"IDLE",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"idle",
+"name": &"JUMPED",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"jump",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"move",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"move_while_crouch",
+"name": &"JUMPING",
 "speed": 4.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"move_while_fall",
+"name": &"MOVING",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"skill_one",
+"name": &"MOVING_WHILE_CROUCHING",
+"speed": 4.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"MOVING_WHILE_FALLING",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"skill_three",
+"name": &"USE_BASIC_ATTACK",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"skill_two",
+"name": &"USE_SKILL_ONE",
 "speed": 5.0
 }, {
 "frames": [],
 "loop": true,
-"name": &"ultimate",
+"name": &"USE_SKILL_THREE",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USE_SKILL_TWO",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USE_SKILL_ULTIMATE",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USING_BASIC_ATTACK",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USING_SKILL_ONE",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USING_SKILL_THREE",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USING_SKILL_TWO",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"USING_SKILL_ULTIMATE",
 "speed": 5.0
 }]
 
@@ -88,25 +118,7 @@ debug_color = Color(0, 1, 0, 0.41960785)
 
 [node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
 sprite_frames = SubResource("SpriteFrames_54qew")
-animation = &"move_while_crouch"
-
-[node name="JumpCooldownTimer" type="Timer" parent="." unique_id=608412356]
-one_shot = true
-
-[node name="BasicAttackTimer" type="Timer" parent="." unique_id=181656414]
-one_shot = true
-
-[node name="SkillOneTimer" type="Timer" parent="." unique_id=83936874]
-one_shot = true
-
-[node name="SkillTwoTimer" type="Timer" parent="." unique_id=907735014]
-one_shot = true
-
-[node name="SkillThreeTimer" type="Timer" parent="." unique_id=911897206]
-one_shot = true
-
-[node name="UltimateTimer" type="Timer" parent="." unique_id=757155592]
-one_shot = true
+animation = &"USE_SKILL_ULTIMATE"
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=1042692501]
 script = ExtResource("2_qqr4u")
@@ -125,9 +137,29 @@ shape = SubResource("RectangleShape2D_mdkfl")
 disabled = true
 debug_color = Color(1, 0, 0, 0.41960785)
 
-[connection signal="timeout" from="JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
-[connection signal="timeout" from="BasicAttackTimer" to="." method="_on_basic_attack_timer_timeout"]
-[connection signal="timeout" from="SkillOneTimer" to="." method="_on_skill_one_timer_timeout"]
-[connection signal="timeout" from="SkillTwoTimer" to="." method="_on_skill_two_timer_timeout"]
-[connection signal="timeout" from="SkillThreeTimer" to="." method="_on_skill_three_timer_timeout"]
-[connection signal="timeout" from="UltimateTimer" to="." method="_on_ultimate_timer_timeout"]
+[node name="Timers" type="Node" parent="." unique_id=1378299738]
+
+[node name="JumpCooldownTimer" type="Timer" parent="Timers" unique_id=608412356]
+one_shot = true
+
+[node name="BasicAttackCooldownTimer" type="Timer" parent="Timers" unique_id=181656414]
+one_shot = true
+
+[node name="SkillOneCooldownTimer" type="Timer" parent="Timers" unique_id=83936874]
+one_shot = true
+
+[node name="SkillTwoCooldownTimer" type="Timer" parent="Timers" unique_id=907735014]
+one_shot = true
+
+[node name="SkillThreeCooldownTimer" type="Timer" parent="Timers" unique_id=911897206]
+one_shot = true
+
+[node name="SkillUltimateCooldownTimer" type="Timer" parent="Timers" unique_id=757155592]
+one_shot = true
+
+[connection signal="timeout" from="Timers/JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
+[connection signal="timeout" from="Timers/BasicAttackCooldownTimer" to="." method="_on_basic_attack_timer_timeout"]
+[connection signal="timeout" from="Timers/SkillOneCooldownTimer" to="." method="_on_skill_one_timer_timeout"]
+[connection signal="timeout" from="Timers/SkillTwoCooldownTimer" to="." method="_on_skill_two_timer_timeout"]
+[connection signal="timeout" from="Timers/SkillThreeCooldownTimer" to="." method="_on_skill_three_timer_timeout"]
+[connection signal="timeout" from="Timers/SkillUltimateCooldownTimer" to="." method="_on_ultimate_timer_timeout"]

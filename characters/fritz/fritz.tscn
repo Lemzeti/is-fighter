@@ -107,8 +107,8 @@ basic_attack_cooldown = 0.25
 sprite_frames = SubResource("SpriteFrames_0bv7v")
 animation = &"dash_punch"
 
-[node name="BasicAttackComboTimer" type="Timer" parent="." index="8" unique_id=1217703886]
-one_shot = true
-
 [node name="Collision" parent="Hitbox" parent_id_path=PackedInt32Array(1526398671) index="0" unique_id=782901455]
 position = Vector2(64, -16)
+
+[node name="BasicAttackComboTimer" type="Timer" parent="Timers" parent_id_path=PackedInt32Array(1378299738) index="6" unique_id=1217703886]
+one_shot = true
