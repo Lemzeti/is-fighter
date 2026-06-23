@@ -6,10 +6,12 @@
 
 [node name="Main" type="Node2D" unique_id=1364142304]
 
-[node name="Fritz" parent="." unique_id=936889375 instance=ExtResource("1_ig7tw")]
+[node name="Char1" parent="." unique_id=936889375 instance=ExtResource("1_ig7tw")]
 position = Vector2(450, 252)
 base_health = null
 base_movement_speed = null
+base_jump_velocity = null
+base_crouch_speed = null
 basic_attack_damage = null
 skill_one_damage = null
 skill_two_damage = null
@@ -27,8 +29,6 @@ skill_one_hitbox_position = null
 skill_two_hitbox_position = null
 skill_three_hitbox_position = null
 ultimate_hitbox_position = null
-base_jump_velocity = null
-base_crouch_speed = null
 
 [node name="Floor" type="StaticBody2D" parent="." unique_id=2147118679]
 position = Vector2(576, 544)

@@ -1,13 +1,7 @@
 [gd_scene format=3 uid="uid://sx426t40x37p"]
 
 [ext_resource type="Script" uid="uid://js300hrbbgdc" path="res://gameplay/character/character.gd" id="1_qqr4u"]
-[ext_resource type="PackedScene" uid="uid://cexk3woowaoqx" path="res://gameplay/combat/hurtbox/hurtbox.tscn" id="2_ogbvh"]
-[ext_resource type="PackedScene" uid="uid://cwotgr4gs8gsy" path="res://gameplay/combat/hitbox/hitbox.tscn" id="3_5ox30"]
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_54qew"]
-custom_solver_bias = 0.469
-radius = 32.0
-height = 128.0
+[ext_resource type="Script" uid="uid://cufp8tes03mtu" path="res://gameplay/state_machine/state_machine.gd" id="2_15w7j"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_54qew"]
 animations = [{
@@ -102,15 +96,12 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3fwhk"]
-radius = 29.0
-height = 122.0
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mdkfl"]
-size = Vector2(84, 20)
-
 [node name="Character" type="CharacterBody2D" unique_id=936889375]
 script = ExtResource("1_qqr4u")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
+sprite_frames = SubResource("SpriteFrames_54qew")
+animation = &"USE_SKILL_ULTIMATE"
 
 [node name="Timers" type="Node" parent="." unique_id=1378299738]
 
@@ -138,29 +129,9 @@ one_shot = true
 unique_name_in_owner = true
 one_shot = true
 
-[node name="Collision" type="CollisionShape2D" parent="." unique_id=2113570327]
-shape = SubResource("CapsuleShape2D_54qew")
-debug_color = Color(0, 1, 0, 0.41960785)
-
-[node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
-sprite_frames = SubResource("SpriteFrames_54qew")
-animation = &"USE_SKILL_ULTIMATE"
-
-[node name="Hurtbox" parent="." unique_id=2064079477 instance=ExtResource("2_ogbvh")]
-position = Vector2(72, -16)
-
-[node name="Collision" type="CollisionShape2D" parent="Hurtbox" unique_id=1926244224]
-position = Vector2(-72, 16)
-shape = SubResource("CapsuleShape2D_3fwhk")
-
-[node name="Hitbox" parent="." unique_id=2031754514 instance=ExtResource("3_5ox30")]
-
-[node name="Collision" type="CollisionShape2D" parent="Hitbox" unique_id=782901455]
-unique_name_in_owner = true
-position = Vector2(72, -16)
-shape = SubResource("RectangleShape2D_mdkfl")
-disabled = true
-debug_color = Color(1, 0, 0, 0.41960785)
+[node name="StateMachine" type="Node" parent="." unique_id=167204576]
+script = ExtResource("2_15w7j")
+metadata/_custom_type_script = "uid://cufp8tes03mtu"
 
 [connection signal="timeout" from="Timers/JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
 [connection signal="timeout" from="Timers/BasicAttackCooldownTimer" to="." method="_on_basic_attack_timer_timeout"]
