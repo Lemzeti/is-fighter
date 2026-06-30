@@ -6,22 +6,26 @@ var direction : float = 0.0
 
 
 func enter() -> void:
+	_propagate_enter()
 	direction = 0.0
 
 
 func exit() -> void:
 	direction = 0.0
+	_propagate_exit()
 
 
 func process() -> void:
-	_propagate_state()
+	_propagate_process()
 
 
 func physics_process() -> void:
-	direction = Input.get_axis("move_left", "move_right")
+	_propagate_physics_process()
+
+	if has_parent_state():
+		direction = parent_state.direction
 	character.velocity.x = direction * character.movement_speed
 
-	_propagate_state()
 	_handle_transitions()
 
 

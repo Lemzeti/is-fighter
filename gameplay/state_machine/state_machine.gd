@@ -12,6 +12,8 @@ var character_parent : Character :
 	get:
 		return get_parent() as Character
 
+var facing_direction : float = 0.0
+
 
 func _ready() -> void:
 	_init_states()

@@ -39,8 +39,29 @@ func _ready() -> void:
 @abstract func _handle_transitions() -> void
 
 
-func _propagate_state() -> void:
+func _propagate_enter() -> void:
+	if not propagation_enabled:
+		return
+	parent_state.enter()
+
+
+func _propagate_exit() -> void:
+	if not propagation_enabled:
+		return
+	parent_state.exit()
+
+
+func _propagate_process() -> void:
 	if not propagation_enabled:
 		return
 	parent_state.process()
+
+
+func _propagate_physics_process() -> void:
+	if not propagation_enabled:
+		return
 	parent_state.physics_process()
+
+
+func has_parent_state() -> bool:
+	return (parent_state != null)

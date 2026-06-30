@@ -48,13 +48,13 @@ var movement_speed : float = 0.0
 var jump_velocity : float = 0.0
 var crouch_speed : float = 0.0
 
-# right = true
-# left = false
-var facing_right : bool = true
+var direction : float = 0.0
 
 
+@onready var state_machine : StateMachine = %StateMachine
 @onready var jump_buffer_timer : Timer = %JumpBufferTimer
-@onready var sprite : AnimatedSprite2D = %Sprite
+@onready var pivot : Node2D = %Pivot
+
 
 
 func _ready() -> void:
@@ -62,6 +62,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	_flip_according_to_move_direction()
 	move_and_slide()
 
 
@@ -77,17 +78,9 @@ func _init_character() -> void:
 	jump_buffer_timer.one_shot = true
 
 
-# Yes I'm using a bool variable to return a bool value in a bool function
-func is_facing_right() -> bool:
-	if facing_right:
-		return true
-	else:
-		return false
-
-
-# What is_facing_right() said
-func is_facing_left() -> bool:
-	if facing_right:
-		return false
-	else:
-		return true
+func _flip_according_to_move_direction() -> void:
+	direction = state_machine.facing_direction
+	if direction == -1:
+		pivot.scale.x = -1
+	elif direction == 1:
+		pivot.scale.x = 1

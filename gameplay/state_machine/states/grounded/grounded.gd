@@ -2,19 +2,27 @@ class_name GroundedState
 extends State
 
 
+var direction : float = 0.0
+
+
 func enter() -> void:
-	pass
+	_propagate_enter()
+	direction = 0.0
 
 
 func exit() -> void:
-	pass
+	direction = 0.0
+	_propagate_exit()
 
 
 func process() -> void:
-	pass
+	_propagate_process()
 
 
 func physics_process() -> void:
+	direction = Input.get_axis("move_left", "move_right")
+	root_fsm.facing_direction = direction
+
 	_handle_transitions()
 
 

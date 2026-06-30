@@ -6,21 +6,25 @@ var input : float = 0.0
 
 
 func enter() -> void:
+	_propagate_enter()
 	input = 0.0
 
 
 func exit() -> void:
 	input = 0.0
+	_propagate_exit()
 
 
 func process() -> void:
-	_propagate_state()
+	_propagate_process()
 
 
 func physics_process() -> void:
-	input = Input.get_axis("move_left", "move_right")
+	_propagate_physics_process()
 
-	_propagate_state()
+	if has_parent_state():
+		input = parent_state.direction
+
 	_handle_transitions()
 
 

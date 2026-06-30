@@ -48,15 +48,17 @@ one_shot = true
 script = ExtResource("2_15w7j")
 metadata/_custom_type_script = "uid://cufp8tes03mtu"
 
-[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=2115755648]
+[node name="Pivot" type="Node2D" parent="." unique_id=1923331448]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Pivot" unique_id=2115755648]
 unique_name_in_owner = true
 sprite_frames = SubResource("SpriteFrames_5ox30")
 animation = &""
 
-[node name="Hurtbox" type="Area2D" parent="." unique_id=130310705]
+[node name="Hurtbox" type="Area2D" parent="Pivot" unique_id=130310705]
 script = ExtResource("4_h7e7v")
 metadata/_custom_type_script = "uid://xp8dcyfpo2gf"
 
-[node name="Hitbox" type="Area2D" parent="." unique_id=901633141]
+[node name="Hitbox" type="Area2D" parent="Pivot" unique_id=901633141]
 script = ExtResource("3_5ox30")
 metadata/_custom_type_script = "uid://cof3vg7kuwka2"

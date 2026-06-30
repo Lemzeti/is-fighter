@@ -118,53 +118,56 @@ metadata/_custom_type_script = "uid://wbhtoph63r4u"
 script = ExtResource("8_1aa7j")
 metadata/_custom_type_script = "uid://br2xn3fwv3460"
 
-[node name="Sprite" parent="." index="2" unique_id=2115755648]
+[node name="Pivot" parent="." index="2" unique_id=1923331448]
+unique_name_in_owner = true
+
+[node name="Sprite" parent="Pivot" index="0" unique_id=2115755648]
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_an5cp")
 animation = &"idle"
 
-[node name="Head" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="0" unique_id=934971465]
+[node name="Head" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="0" unique_id=934971465]
 position = Vector2(0, -47)
 shape = SubResource("CircleShape2D_an5cp")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="Torso" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="1" unique_id=785802579]
+[node name="Torso" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="1" unique_id=785802579]
 position = Vector2(-2.0000005, 26.000004)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("RectangleShape2D_y36me")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="LeftArm" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="2" unique_id=788302951]
+[node name="LeftArm" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="2" unique_id=788302951]
 position = Vector2(-13.999999, 26)
 rotation = 0.2617994
 scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("RectangleShape2D_dvsx1")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="RightArm" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="3" unique_id=1478751261]
+[node name="RightArm" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="3" unique_id=1478751261]
 position = Vector2(10.000004, 26)
 rotation = -0.2617994
 scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("RectangleShape2D_7iiuk")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="RightLeg" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="4" unique_id=470351983]
+[node name="RightLeg" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="4" unique_id=470351983]
 position = Vector2(11, 78)
 rotation = -0.5235988
 shape = SubResource("RectangleShape2D_an5cp")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="LeftLeg" type="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(130310705) index="5" unique_id=434350572]
+[node name="LeftLeg" type="CollisionShape2D" parent="Pivot/Hurtbox" parent_id_path=PackedInt32Array(130310705) index="5" unique_id=434350572]
 position = Vector2(-9, 78)
 rotation = 0.2617994
 shape = SubResource("RectangleShape2D_dccpk")
 debug_color = Color(0, 1, 0, 0.41960785)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" parent_id_path=PackedInt32Array(901633141) index="0" unique_id=833572466]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/Hitbox" parent_id_path=PackedInt32Array(901633141) index="0" unique_id=833572466]
 position = Vector2(64, 0)
 shape = SubResource("RectangleShape2D_1aa7j")
 debug_color = Color(1, 0, 0, 0.41960785)
 
-[node name="Collision" type="CollisionShape2D" parent="." index="5" unique_id=508983584]
+[node name="Collision" type="CollisionShape2D" parent="." index="3" unique_id=508983584]
 position = Vector2(0, 6)
 shape = SubResource("CapsuleShape2D_lq6bm")

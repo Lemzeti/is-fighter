@@ -3,20 +3,22 @@ extends State
 
 
 func enter() -> void:
-	pass
+	_propagate_enter()
 
 
 func exit() -> void:
-	pass
+	_propagate_exit()
 
 
 func process() -> void:
-	_propagate_state()
+	_propagate_process()
 
 
 func physics_process() -> void:
+	_propagate_physics_process()
+
 	character.velocity.y -= character.jump_velocity
-	_propagate_state()
+
 	_handle_transitions()
 
 
