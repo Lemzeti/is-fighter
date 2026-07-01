@@ -1,6 +1,8 @@
 @abstract
 class_name State
 extends Node
+## Base of the base State class for all character actions.
+## Custom substates may be made to override existing base states.
 
 
 @warning_ignore("unused_signal")

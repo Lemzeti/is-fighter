@@ -6,7 +6,9 @@ class_name StateMachine extends Node
 
 var states : Dictionary[String, State] = {}
 
-var current_state : State = null
+var current_state : State = null :
+	set(value):
+		character_parent.play_animation_according_to_state(value.name.to_lower())
 
 var character_parent : Character :
 	get:
@@ -39,8 +41,10 @@ func _init_states() -> void:
 
 	# Set initial state
 	if initial_state != null:
-		initial_state.enter()
+		print("yep initial_state is not null")
 		current_state = initial_state
+		current_state.enter()
+	print("current_state: ", current_state)
 
 
 func _on_state_changed(before : State, new_state_name : String) -> void:

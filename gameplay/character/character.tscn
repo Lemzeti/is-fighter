@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://sx426t40x37p"]
 
 [ext_resource type="Script" uid="uid://js300hrbbgdc" path="res://gameplay/character/character.gd" id="1_qqr4u"]
-[ext_resource type="Script" uid="uid://cufp8tes03mtu" path="res://gameplay/state_machine/state_machine.gd" id="2_15w7j"]
+[ext_resource type="Script" uid="uid://cufp8tes03mtu" path="res://gameplay/base_state_machine/state_machine.gd" id="2_15w7j"]
 [ext_resource type="Script" uid="uid://cof3vg7kuwka2" path="res://gameplay/components/hitbox/hitbox.gd" id="3_5ox30"]
 [ext_resource type="Script" uid="uid://xp8dcyfpo2gf" path="res://gameplay/components/hurtbox/hurtbox.gd" id="4_h7e7v"]
 
@@ -14,10 +14,6 @@ script = ExtResource("1_qqr4u")
 [node name="Timers" type="Node" parent="." unique_id=1378299738]
 
 [node name="CooldownTimers" type="Node" parent="Timers" unique_id=1773531876]
-
-[node name="JumpCooldownTimer" type="Timer" parent="Timers/CooldownTimers" unique_id=608412356]
-unique_name_in_owner = true
-one_shot = true
 
 [node name="BasicAttackCooldownTimer" type="Timer" parent="Timers/CooldownTimers" unique_id=181656414]
 unique_name_in_owner = true
@@ -39,6 +35,28 @@ one_shot = true
 unique_name_in_owner = true
 one_shot = true
 
+[node name="DurationTimers" type="Node" parent="Timers" unique_id=488379116]
+
+[node name="BasicAttackDurationTimer" type="Timer" parent="Timers/DurationTimers" unique_id=841467983]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="SkillOneDurationTimer" type="Timer" parent="Timers/DurationTimers" unique_id=638561268]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="SkillTwoDurationTimer" type="Timer" parent="Timers/DurationTimers" unique_id=2105380054]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="SkillThreeDurationTimer" type="Timer" parent="Timers/DurationTimers" unique_id=958061471]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="SkillUltimateDurationTimer" type="Timer" parent="Timers/DurationTimers" unique_id=8101255]
+unique_name_in_owner = true
+one_shot = true
+
 [node name="Misc" type="Node" parent="Timers" unique_id=650038178]
 
 [node name="JumpBufferTimer" type="Timer" parent="Timers/Misc" unique_id=1245549578]
@@ -56,9 +74,17 @@ sprite_frames = SubResource("SpriteFrames_5ox30")
 animation = &""
 
 [node name="Hurtbox" type="Area2D" parent="Pivot" unique_id=130310705]
+unique_name_in_owner = true
 script = ExtResource("4_h7e7v")
 metadata/_custom_type_script = "uid://xp8dcyfpo2gf"
 
 [node name="Hitbox" type="Area2D" parent="Pivot" unique_id=901633141]
+unique_name_in_owner = true
 script = ExtResource("3_5ox30")
 metadata/_custom_type_script = "uid://cof3vg7kuwka2"
+
+[connection signal="timeout" from="Timers/DurationTimers/BasicAttackDurationTimer" to="." method="_on_basic_attack_duration_timer_timeout"]
+[connection signal="timeout" from="Timers/DurationTimers/SkillOneDurationTimer" to="." method="_on_skill_one_duration_timer_timeout"]
+[connection signal="timeout" from="Timers/DurationTimers/SkillTwoDurationTimer" to="." method="_on_skill_two_duration_timer_timeout"]
+[connection signal="timeout" from="Timers/DurationTimers/SkillThreeDurationTimer" to="." method="_on_skill_three_duration_timer_timeout"]
+[connection signal="timeout" from="Timers/DurationTimers/SkillUltimateDurationTimer" to="." method="_on_skill_ultimate_duration_timer_timeout"]

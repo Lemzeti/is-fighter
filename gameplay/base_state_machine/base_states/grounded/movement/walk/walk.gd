@@ -1,4 +1,4 @@
-class_name AirborneState
+class_name WalkState
 extends State
 
 
@@ -16,16 +16,19 @@ func exit() -> void:
 
 
 func process() -> void:
-	pass
+	_propagate_process()
 
 
 func physics_process() -> void:
-	direction = Input.get_axis("move_left", "move_right")
-	root_fsm.facing_direction = direction
+	_propagate_physics_process()
+
+	if has_parent_state():
+		direction = parent_state.direction
+	character.velocity.x = direction * character.movement_speed
 
 	_handle_transitions()
 
 
 func _handle_transitions() -> void:
-	if character.is_on_floor():
-		state_changed.emit(root_fsm.current_state, "idle")
+	if direction == 0.0:
+		state_changed.emit(self, "idle")

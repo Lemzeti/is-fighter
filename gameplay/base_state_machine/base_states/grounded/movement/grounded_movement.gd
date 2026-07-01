@@ -1,4 +1,4 @@
-class_name MoveState
+class_name GroundedMovementState
 extends State
 
 
@@ -24,11 +24,9 @@ func physics_process() -> void:
 
 	if has_parent_state():
 		direction = parent_state.direction
-	character.velocity.x = direction * character.movement_speed
 
 	_handle_transitions()
 
 
 func _handle_transitions() -> void:
-	if direction == 0.0: # Idle
-		state_changed.emit(self, "idle")
+	pass

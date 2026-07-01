@@ -1,17 +1,17 @@
-class_name CrouchState
+class_name IdleState 
 extends State
 
 
-var direction : float = 0.0
+var input : float = 0.0
 
 
 func enter() -> void:
 	_propagate_enter()
-	direction = 0.0
+	input = 0.0
 
 
 func exit() -> void:
-	direction = 0.0
+	input = 0.0
 	_propagate_exit()
 
 
@@ -23,12 +23,13 @@ func physics_process() -> void:
 	_propagate_physics_process()
 
 	if has_parent_state():
-		direction = parent_state.direction
-	character.velocity.x = direction * character.crouch_speed
+		input = parent_state.direction
 
 	_handle_transitions()
 
 
 func _handle_transitions() -> void:
-	if not Input.is_action_pressed("crouch"): # Idle
-		state_changed.emit(self, "idle")
+	if Input.is_action_pressed("crouch"):
+		state_changed.emit(self, "crouch")
+	elif input != 0.0:
+		state_changed.emit(self, "walk")

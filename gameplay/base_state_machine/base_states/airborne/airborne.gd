@@ -1,4 +1,4 @@
-class_name GroundedState
+class_name AirborneState
 extends State
 
 
@@ -27,9 +27,5 @@ func physics_process() -> void:
 
 
 func _handle_transitions() -> void:
-	if not character.is_on_floor(): # Fall
-		state_changed.emit(root_fsm.current_state, "fall")
-	elif Input.is_action_just_pressed("jump") or not character.jump_buffer_timer.is_stopped(): # Jump
-		state_changed.emit(root_fsm.current_state, "jump")
-	elif Input.is_action_just_pressed("crouch"): # Crouch
-		state_changed.emit(root_fsm.current_state, "crouch")
+	if character.is_on_floor():
+		state_changed.emit(root_fsm.current_state, "idle")

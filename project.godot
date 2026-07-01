@@ -29,6 +29,8 @@ folder_colors={
 "res://assets/": "teal",
 "res://core/": "pink",
 "res://gameplay/": "orange",
+"res://gameplay/base_state_machine/": "red",
+"res://gameplay/character/": "green",
 "res://util/": "gray"
 }
 
